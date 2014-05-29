@@ -76,7 +76,7 @@ Ti.API.info(_options.type + ': ' + _options.url);
 
 			try {
 				responseJSON = JSON.parse(xhr.responseText);
-			} catch (e) {}
+			} catch (evt) {}
 
 			_callback({
 				success: false,
@@ -96,7 +96,6 @@ Ti.API.info(_options.type + ': ' + _options.url);
 		}
 
 		// Parse auth headers
-		/* 		Ti.API.info(Alloy.CFG.Parse.applicationId); */
 		xhr.setRequestHeader('X-Parse-Application-Id', Alloy.CFG.Parse.applicationId);
 		xhr.setRequestHeader('X-Parse-REST-API-Key', Alloy.CFG.Parse.apiKey);
 
