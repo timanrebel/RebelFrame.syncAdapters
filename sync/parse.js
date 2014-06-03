@@ -1,5 +1,4 @@
-var Parse = require('com.elijahwindsor.parsemodule');
-
+var Acl = require('RebelFrame/Acl');
 /**
  * Rest API Adapter for Titanium Alloy
  * @author Mads Møller
@@ -99,8 +98,9 @@ Ti.API.info(_options.type + ': ' + _options.url);
 		xhr.setRequestHeader('X-Parse-Application-Id', Alloy.CFG.Parse.applicationId);
 		xhr.setRequestHeader('X-Parse-REST-API-Key', Alloy.CFG.Parse.apiKey);
 
-		if (Parse.currentUser)
-			xhr.setRequestHeader('X-Parse-Session-Token', Parse.currentUser._sessionToken);
+		// TODO Sessiontoken
+		if(Acl.cloudAccessToken)
+			xhr.setRequestHeader('X-Parse-Session-Token', Acl.cloudAccessToken);
 
 		//
 		if (_options.modifiedSince) {
