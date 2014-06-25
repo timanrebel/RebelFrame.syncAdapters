@@ -21,13 +21,11 @@ function InitAdapter(config) {
 
 function apiCall(_options, _callback) {
 	if (Ti.Network.online) {
-		var TiExtendNW = require('net.imthinker.ti.extendnw'),
-			xhr = TiExtendNW.createHTTPClient();
+		var xhr = Ti.Network.createHTTPClient({
+			timeout: _options.timeout || 20000
+		});
 
-		xhr.timeout = _options.timeout || 10000;
-		xhr.cache = true;
-		xhr.enableKeepAlive = true;
-
+		// Add accessToken
 		if (_.isString(_options.data)) {
 			var data = JSON.parse(_options.data);
 
@@ -43,26 +41,44 @@ function apiCall(_options, _callback) {
 		//Prepare the request
 		xhr.open(_options.type, _options.url);
 
-		xhr.onload = function () {
+		xhr.onload = function() {
+			var responseJSON, success = true,
+				error;
+
+			try {
+				responseJSON = JSON.parse(xhr.responseText);
+			} catch (e) {
+				Ti.API.error('[REST API] apiCall ERROR: ' + e.message);
+				Ti.API.info(xhr.responseText);
+				success = false;
+				error = e.message;
+			}
+
 			_callback({
-				success: true,
-				status: 'ok',
+				success: success,
+				status: success ? (xhr.status == 200 ? "ok" : xhr.status) : 'error',
 				code: xhr.status,
-				data: null,
-				responseText: xhr.responseText,
-				responseJSON: xhr.responseJSON
+				data: error,
+				responseText: xhr.responseText || null,
+				responseJSON: responseJSON || null
 			});
 		};
 
 		//Handle error
-		xhr.onerror = function (e) {
-			callback({
+		xhr.onerror = function(e) {
+			var responseJSON;
+
+			try {
+				responseJSON = JSON.parse(xhr.responseText);
+			} catch (evt) {}
+
+			_callback({
 				success: false,
 				status: "error",
 				code: xhr.status,
 				data: e.error,
 				responseText: xhr.responseText,
-				responseJSON: xhr.responseJSON
+				responseJSON: responseJSON || null
 			});
 			Ti.API.error('[REST API] apiCall ERROR: ' + xhr.responseText);
 			Ti.API.error('[REST API] apiCall ERROR CODE: ' + xhr.status);
@@ -157,7 +173,7 @@ function Sync(method, model, opts) {
 			if (Alloy.Backbone.emulateJSON)
 				params.data._method = type;
 			params.type = 'POST';
-			params.beforeSend = function (xhr) {
+			params.beforeSend = function(xhr) {
 				params.headers['X-HTTP-Method-Override'] = type;
 			};
 		}
