@@ -56,7 +56,7 @@ function apiCall(_options, _callback) {
 
 		//Handle error
 		xhr.onerror = function (e) {
-			callback({
+			_callback({
 				success: false,
 				status: "error",
 				code: xhr.status,
