@@ -343,7 +343,7 @@ function parseJSON(DEBUG, _response, parentNode) {
 
 function traverseProperties(object, string) {
 	var explodedString = string.split('.');
-	for (i = 0, l = explodedString.length; i < l; i++) {
+	for (var i = 0, l = explodedString.length; i < l; i++) {
 		object = object[explodedString[i]];
 	}
 	return object;
